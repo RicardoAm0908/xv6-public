@@ -10,7 +10,10 @@
 int
 sys_fork(void)
 {
-  return fork();
+  int tickets;
+  if(argint (0, &tickets) < 0)
+    return -1;
+  return fork(MEDPRIOR);
 }
 
 int
