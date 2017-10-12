@@ -7,6 +7,8 @@
 #include "proc.h"
 #include "spinlock.h"
 
+int numTickets = 0;
+
 struct {
   struct spinlock lock;
   struct proc proc[NPROC];
@@ -150,7 +152,7 @@ userinit(void)
   acquire(&ptable.lock);
 
   p->state = RUNNABLE;
-
+  numTickets += p->tickets;
   release(&ptable.lock);
 }
 
@@ -325,6 +327,8 @@ wait(void)
 void
 scheduler(void)
 {
+  int auxTickets;
+  int random;
   struct proc *p;
   struct cpu *c = mycpu();
   c->proc = 0;
@@ -332,16 +336,39 @@ scheduler(void)
   for(;;){
     // Enable interrupts on this processor.
     sti();
+    /*
+    //Loop over process table, couting the tickets
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
 
+      //Desconsidering the not RUNNABLE process
+      if(p->state != RUNNABLE) continue;
+
+      //counting the RUNNABLE process tickets
+      numTickets += p->tickets;
+    }*/
+    //cprintf("TICKETS %d", numTickets);
     // Loop over process table looking for process to run.
+
+    random = lotteryRand(numTickets);
+    auxTickets = 0;
+
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
+      if(p->state != RUNNABLE){
         continue;
+      }
+
+      //Find the process that have the ticket that correspond to the random number
+      if((p->tickets + auxTickets) < random) {
+        auxTickets += p->tickets;
+        continue;
+      }
 
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
+      //cprintf("%d ... %d e %d\n",numTickets, random, p->pid);
+
       c->proc = p;
       switchuvm(p);
       p->state = RUNNING;
@@ -440,6 +467,12 @@ sleep(void *chan, struct spinlock *lk)
   // Go to sleep.
   p->chan = chan;
   p->state = SLEEPING;
+  /*if(numTickets < p->tickets) {
+    cprintf("ERRO\n");
+    wait();
+  }*/
+  //numTickets -= p->tickets;
+  //if(numTickets < 0 ) numTickets = 0;
 
   sched();
 
@@ -462,8 +495,11 @@ wakeup1(void *chan)
   struct proc *p;
 
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
-    if(p->state == SLEEPING && p->chan == chan)
+    if(p->state == SLEEPING && p->chan == chan) {
       p->state = RUNNABLE;
+      numTickets += p->tickets;
+    }
+
 }
 
 // Wake up all processes sleeping on chan.
@@ -525,7 +561,7 @@ procdump(void)
       state = states[p->state];
     else
       state = "???";
-    cprintf("%d %s %s", p->pid, state, p->name);
+    cprintf("%d %s %s TICKETS: %d", p->pid, state, p->name, p->tickets);
     if(p->state == SLEEPING){
       getcallerpcs((uint*)p->context->ebp+2, pc);
       for(i=0; i<10 && pc[i] != 0; i++)
@@ -533,4 +569,33 @@ procdump(void)
     }
     cprintf("\n");
   }
+}
+
+int lotteryRand (int num){
+    if (num <= 1) return 1;
+
+    static int z1 = 12345;
+    static int z2 = 12345;
+    static int z3 = 12345;
+    static int z4 = 12345;
+
+    int b= (((z1 << 6) ^ z1) >> 13);
+    z1 = (((z1 & 4294967294) << 18) ^ b);
+
+    b = (((z2 << 2) ^ z2) >> 27);
+    z2 = (((z2 & 4294967288) << 2) ^ b);
+
+    b = (((z3 << 13) ^ z2) >> 21);
+    z3 = (((z3 & 4294967280) << 7) ^ b);
+
+    b = (((z4 << 3) ^ z4) >> 12);
+    z4 = (((z4 & 4294967168) << 13) ^ b);
+
+    int rand = ((z1 ^ z2 ^ z3 ^ z4) % num);
+
+    if(rand < 0) rand = rand * -1;
+
+    if(rand == 0) return 1;
+
+    return rand;
 }

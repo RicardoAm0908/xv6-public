@@ -13,7 +13,7 @@ sys_fork(void)
   int tickets;
   if(argint (0, &tickets) < 0)
     return -1;
-  return fork(MEDPRIOR);
+  return fork(tickets);
 }
 
 int

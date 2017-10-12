@@ -12,7 +12,7 @@
 #define NBUF         (MAXOPBLOCKS*3)  // size of disk block cache
 #define FSSIZE       1000  // size of file system in blocks
 #define MINTICKET    0    //minimum number of tickets
-#define MAXTICKET    128  //maximun number of tickets
+#define MAXTICKET    4096  //maximun number of tickets
 #define LOWPRIOR     16   //Number of tickets that a low priorit process should have
 #define MEDPRIOR     64   //Number of tickets that a medium priorit process should have
-#define HIGHPRIOR    128   //Number of tickets that a high priorit process should have
+#define HIGHPRIOR    2048   //Number of tickets that a high priorit process should have
