@@ -46,6 +46,12 @@ sys_getpid(void)
 }
 
 int
+sys_gettickets(void)
+{
+  return myproc()->tickets;
+}
+
+int
 sys_sbrk(void)
 {
   int addr;
