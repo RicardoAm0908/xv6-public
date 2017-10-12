@@ -6,7 +6,7 @@
 #define IS_FORKED (pid == 0)
 #define CHECK_FORK() if (pid < 0) printf(1, "Fork failed!");
 
-#define LIMIT 300
+#define LIMIT 500
 
 void nop() {
   // Must do something like "print nothing" due agressive loop optimizations
@@ -24,36 +24,6 @@ int main()
   pid = fork(500);
   CHECK_FORK();
 
-  if (!IS_FORKED) {
-    pid = fork(1000);
-    CHECK_FORK();
-  }
-
-  if (!IS_FORKED) {
-    pid = fork(3000);
-    CHECK_FORK();
-  }
-
-  if (!IS_FORKED) {
-    pid = fork(0);
-    CHECK_FORK();
-  }
-
-  if (!IS_FORKED) {
-    pid = fork(60);
-    CHECK_FORK();
-  }
-
-  if (!IS_FORKED) {
-    pid = fork(1500);
-    CHECK_FORK();
-  }
-
-  if (!IS_FORKED) {
-    pid = fork(3);
-    CHECK_FORK();
-  }
-
   if (pid == 0) {
     printf(1, "PID %d has started\n", getpid());
 
@@ -65,12 +35,6 @@ int main()
   }
 
   if (pid > 0) {
-    wait();
-    wait();
-    wait();
-    wait();
-    wait();
-    wait();
     wait();
 
 
