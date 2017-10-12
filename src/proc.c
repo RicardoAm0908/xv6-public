@@ -581,10 +581,10 @@ procdump(void)
 int lotteryRand (int num){
     if (num <= 1) return 1;
 
-    static int z1 = 12345;
-    static int z2 = 12345;
-    static int z3 = 12345;
-    static int z4 = 12345;
+    static int z1 = 123456;
+    static int z2 = 123457;
+    static int z3 = 123458;
+    static int z4 = 123459;
 
     int b= (((z1 << 6) ^ z1) >> 13);
     z1 = (((z1 & 4294967294) << 18) ^ b);

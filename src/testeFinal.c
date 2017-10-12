@@ -6,10 +6,10 @@
 #define IS_FORKED (pid == 0)
 #define CHECK_FORK() if (pid < 0) printf(1, "Fork failed!");
 
-#define LIMIT 500
-#define N 5
+#define LIMIT 300
+#define N 8
 
-int tickets[N] = {500, 1000, 200, 2048, 60};
+int tickets[N] = {500, 1000, 200, 2048, 60, 4000, 3, 16};
 
 void losttime();
 
@@ -24,7 +24,7 @@ int main()
   int pid = 0;
   unsigned int i;
 
-  printf(1, "I'm PID %d, the Godfather\n", getpid());
+  printf(1, "\nI'm PID %d, the great and powerful father\n\n", getpid());
 
   pid = fork(tickets[0]);
   CHECK_FORK();
