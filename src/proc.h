@@ -33,7 +33,6 @@ struct context {
 };
 
 enum procstate { UNUSED, EMBRYO, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
-int lotteryRand (int num);
 
 // Per-process state
 struct proc {
@@ -50,7 +49,8 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
-  int tickets;                 // Tickets for the lottery schedule
+  int tickets;                 // Tickets for the Stride schedule
+  unsigned long int stride;         // Stride to be add any time that the process run  
 };
 
 // Process memory is laid out contiguously, low addresses first:

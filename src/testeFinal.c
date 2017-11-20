@@ -7,9 +7,9 @@
 #define CHECK_FORK() if (pid < 0) printf(1, "Fork failed!");
 
 #define LIMIT 300
-#define N 8
+#define N 4
 
-int tickets[N] = {500, 1000, 200, 2048, 60, 4000, 3, 16};
+int tickets[N] = {8, 1, 70, 10};
 
 void losttime();
 
@@ -54,5 +54,8 @@ void losttime() {
 
   for (i = 0; i < LIMIT; i++)
     for (j = 0; j < LIMIT; j++)
-      for (k = 0; k < LIMIT; k++) nop();
+      for (k = 0; k < LIMIT; k++)
+        //for(l = 0; l < LIMIT; l++)
+          //for(m = 0;// m < LIMIT; m++)
+            nop();
 }
