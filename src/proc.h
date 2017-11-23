@@ -50,7 +50,7 @@ struct proc {
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
   int tickets;                 // Tickets for the Stride schedule
-  unsigned long int stride;         // Stride to be add any time that the process run  
+  unsigned long int stride;         // Stride to be add any time that the process run
 };
 
 // Process memory is laid out contiguously, low addresses first:

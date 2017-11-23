@@ -344,16 +344,13 @@ scheduler(void)
 
     // Loop over process table looking for process to run.
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE){
+      //Find the process have the less stride and state == RUNNABLE;
+      if(p->state != RUNNABLE || p->stride > menor){
         continue;
       }
 
-      //Find the process have the less stride;
-      if(p->stride < menor) {
-        menor = p->stride;
-        select = p;
-        //continue;
-      }
+      menor = p->stride;
+      select = p;
 
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
@@ -541,9 +538,6 @@ procdump(void)
   char *state;
   uint pc[10];
 
-
-  state = 0;
-  state++;
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     if(p->state == UNUSED)
       continue;
@@ -551,6 +545,7 @@ procdump(void)
       state = states[p->state];
     else
       state = "???";
+    cprintf("%d %s %s -- TICKETS %d", p->pid, state, p->name, p->tickets);
     if(p->state == SLEEPING){
       getcallerpcs((uint*)p->context->ebp+2, pc);
       for(i=0; i<10 && pc[i] != 0; i++)
