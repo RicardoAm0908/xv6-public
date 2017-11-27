@@ -316,6 +316,17 @@ wait(void)
   }
 }
 
+void checkStride(struct proc *p, struct proc *select) {
+  if(select->stride >  - (ULI_SIZE - select->tickets)) {
+    while(p < &ptable.proc[NPROC]) {
+      if(p->state == RUNNABLE) {
+        p->stride -= select->stride;
+        p++;
+      }
+    }
+  }
+}
+
 //PAGEBREAK: 42
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
@@ -356,7 +367,8 @@ scheduler(void)
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
       //cprintf("%d\n", select->stride);
-      select->stride += select->tickets;
+      checkStride(ptable.proc, select);
+      select->stride += (STRIDE_CONSTANT/select->tickets);
       c->proc = select;
       switchuvm(select);
       select->state = RUNNING;
@@ -479,7 +491,7 @@ wakeup1(void *chan)
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
     if(p->state == SLEEPING && p->chan == chan) {
       p->state = RUNNABLE;
-      p->stride += p->tickets;
+      //p->stride += (STRIDE_CONSTANT)/p->tickets;
     }
 }
 

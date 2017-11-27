@@ -1,3 +1,6 @@
+#define STRIDE_CONSTANT 10000
+#define ULI_SIZE 429496295
+
 // Per-CPU state
 struct cpu {
   uchar apicid;                // Local APIC ID

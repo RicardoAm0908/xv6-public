@@ -6,10 +6,10 @@
 #define IS_FORKED (pid == 0)
 #define CHECK_FORK() if (pid < 0) printf(1, "Fork failed!");
 
-#define LIMIT 300
-#define N 4
+#define LIMIT 800
+#define N 7
 
-int tickets[N] = {8, 1, 70, 10};
+int tickets[N] = {1000000000, 2000000000, 250, 10000, 50000000, 15000, 1};
 
 void losttime();
 
