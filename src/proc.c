@@ -356,29 +356,27 @@ scheduler(void)
     // Loop over process table looking for process to run.
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       //Find the process have the less stride and state == RUNNABLE;
-      if(p->state != RUNNABLE || p->stride > menor){
-        continue;
+      if(p->state == RUNNABLE && p->stride < menor){
+        menor = p->stride;
+        select = p;
       }
-
-      menor = p->stride;
-      select = p;
-
-      // Switch to chosen process.  It is the process's job
-      // to release ptable.lock and then reacquire it
-      // before jumping back to us.
-      //cprintf("%d\n", select->stride);
-      checkStride(ptable.proc, select);
-      select->stride += (STRIDE_CONSTANT/select->tickets);
-      c->proc = select;
-      switchuvm(select);
-      select->state = RUNNING;
-      swtch(&(c->scheduler), select->context);
-      switchkvm();
-
-      // Process is done running for now.
-      // It should have changed its p->state before coming back.
-      c->proc = 0;
     }
+
+    // Switch to chosen process.  It is the process's job
+    // to release ptable.lock and then reacquire it
+    // before jumping back to us.
+    //cprintf("%d\n", select->stride);
+    checkStride(ptable.proc, select);
+    select->stride += (STRIDE_CONSTANT/select->tickets);
+    c->proc = select;
+    switchuvm(select);
+    select->state = RUNNING;
+    swtch(&(c->scheduler), select->context);
+    switchkvm();
+
+    // Process is done running for now.
+    // It should have changed its p->state before coming back.
+    c->proc = 0;
     release(&ptable.lock);
 
   }
